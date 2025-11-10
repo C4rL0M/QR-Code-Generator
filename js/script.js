@@ -1,0 +1,10 @@
+const textInput=document.getElementById('textInput')
+const generateBtn=document.getElementById('generateBtn')
+const downloadBtn=document.getElementById('downloadBtn')
+const qrImage=document.getElementById('qrImage')
+const sizeSelect=document.getElementById('sizeSelect')
+function buildUrl(text,size){return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}`}
+generateBtn.addEventListener('click',()=>{const v=textInput.value.trim();if(!v)return;const size=sizeSelect.value;qrImage.classList.remove('qr-show');qrImage.style.display='none';qrImage.src=buildUrl(v,size);downloadBtn.disabled=true})
+qrImage.addEventListener('load',()=>{qrImage.classList.add('qr-show');qrImage.style.display='block';downloadBtn.disabled=false})
+downloadBtn.addEventListener('click',async()=>{const src=qrImage.src;if(!src)return;try{const res=await fetch(src);const blob=await res.blob();const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='qr.png';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}catch(e){const a=document.createElement('a');a.href=src;a.target='_blank';document.body.appendChild(a);a.click();a.remove()}})
+textInput.addEventListener('keydown',e=>{if(e.key==='Enter')generateBtn.click()})
